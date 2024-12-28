@@ -45,7 +45,7 @@ user_schema = {
     "full_name": str,
     "username": str,
     "chat_id": int,
-    "total": int
+    "wallet": 0
 }
 
 # Define the collections for owner, users
@@ -84,12 +84,12 @@ def save_owner(full_name, username, chat_id):
         owner_collection.insert_one(owner_info)
 
 # Create a function to save the user information to the database
-def save_user(full_name, username, chat_id, total_users):
+def save_user(full_name, username, chat_id):
     user_info = {
         "full_name": full_name,
         "username": username,
         "chat_id": chat_id,
-        "total_users": total_users
+        "wallet": 0
     }
     user_existed = user_collection.find_one({"chat_id": chat_id}) is not None
 
@@ -103,10 +103,12 @@ def save_user(full_name, username, chat_id, total_users):
 
             user = get_user(chat_id)
 
+            # Counting the number of the users
+            total_users = user_collection.count_documents({})
             # Get chat ID from owner document
-            chat_id = owner_collection.find_one()['chat_id']
-            # if chat_id != user['chat_id']:
-            #     bot.send_message(chat_id, f"🔥 New member:\n\n👤 <b>{full_name}</b>\n\nTotal users: {total_users}", parse_mode='HTML' )
+            owner_chat_id = owner_collection.find_one()['chat_id']
+            if owner_chat_id != user['chat_id']:
+                bot.send_message(owner_chat_id, f"🔥 New member:\n\n👤 <b>{full_name}</b>\n\nTotal users: {total_users}", parse_mode='HTML' )
 
 
 
