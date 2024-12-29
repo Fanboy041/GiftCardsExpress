@@ -1,5 +1,5 @@
 from Database.MongoDB import (
-    owner_collection, save_owner, save_user, get_owner)
+    collection, save_owner, save_user, get_owner)
 
 def send_welcome(message, bot):
     if message.chat.type == "private":
@@ -16,15 +16,16 @@ def send_welcome(message, bot):
         chat_id = message.chat.id
         
         # Set owner if it's the first user and there is one owner only
-        if owner_collection.count_documents({}) == 0:
+        if collection.count_documents({}) == 0:
             save_owner(full_name, username, chat_id)
             bot.send_message(message.chat.id, f"Welcome <b>{full_name}</b>\nYou are my owner from now on", parse_mode='HTML')
+            # logging.info(message.text)
 
         else:
             # Save the user info in the database
             save_user(full_name, username, chat_id)
 
-            if message.chat.id == get_owner()['chat_id']:
+            if message.chat.id == get_owner("Owner")['chat_id']:
                 bot.send_message(message.chat.id, f"Hey owner, <b>{full_name}</b>!\n\nThank you for interacting with me. I'm excited to have you on board. 🌹", parse_mode='HTML')
             else:
                 bot.send_message(message.chat.id, f"Welcome, <b>{full_name}</b>!\n\nThank you for interacting with our Telegram bot. We're excited to have you on board. 🌹", parse_mode='HTML')

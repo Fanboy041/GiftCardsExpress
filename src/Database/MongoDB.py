@@ -23,8 +23,8 @@ client = MongoClient(uri)
 db = client.permissions # Permissions is the name of the database
 
 """ # Create the collections
-db.create_collection("owner_collection")
-db.create_collection("user_collection") """
+db.create_collection("user_collection") 
+"""
 
 # Send a ping to confirm a successful connection
 try:
@@ -33,82 +33,109 @@ try:
 except Exception as e:
     print(e)
 
-# Create a schema for owner that contains a full name and username and chat id of the owner
-owner_schema = {
-    "full_name": str,
-    "username": str,
-    "chat_id": int
-}
+    
 
 # Create a schema for users that contains a full name and username and chat id of the user
 user_schema = {
+    "rule": str,
     "full_name": str,
     "username": str,
     "chat_id": int,
-    "wallet": 0
+    # "wallet": 0
+    "wallet": int
 }
 
-# Define the collections for owner, users
-owner_collection = client.permissions.owner_collection
-
-user_collection = client.permissions.user_collection
+# # Define the collections for owner, users
+collection = client.permissions.collection
 
 # Create a function to get the owner information from the database
-def get_owner():
-    return owner_collection.find_one()
+def get_owner(rule):
+    return collection.find_one({"rule": rule})
 
 # Create a function to get the user information from the database
 def get_user(chat_id):
-    return user_collection.find_one({"chat_id": chat_id})
+    return collection.find_one({"chat_id": chat_id})
 
 # Create a function to get all users information from the database
-def get_users():
-    return user_collection.find()
+def get_users(rule):
+    return collection.find_one({"rule": rule})
 
 def delete_user(chat_id):
-    return user_collection.delete_one({'chat_id': chat_id})
+    return collection.delete_one({'chat_id': chat_id})
 
 # Create a function to save the owner information to the database
 def save_owner(full_name, username, chat_id):
     owner_info = {
-        "full_name": full_name,
-        "username": username,
-        "chat_id": chat_id
-    }
-    owner_existed = owner_collection.find_one({"chat_id": chat_id}) is not None
-
-    if owner_existed:
-        owner_collection.update_one({"chat_id": chat_id}, {"$set": owner_info})
-
-    else:
-        owner_collection.insert_one(owner_info)
-
-# Create a function to save the user information to the database
-def save_user(full_name, username, chat_id):
-    user_info = {
+        "rule": "Owner",
         "full_name": full_name,
         "username": username,
         "chat_id": chat_id,
         "wallet": 0
     }
-    user_existed = user_collection.find_one({"chat_id": chat_id}) is not None
+    user_existed(owner_info)
 
-    if user_existed:
-        user_collection.update_one({"chat_id": chat_id}, {"$set": {"full_name": full_name, "username": username}})
+    # owner_existed = collection.find_one({"chat_id": chat_id}) is not None
+
+    # if owner_existed:
+    #     collection.update_one({"chat_id": chat_id}, {"$set": owner_info})
+
+    # else:
+    #     collection.insert_one(owner_info)
+
+# Create a function to save the user information to the database
+def save_user(full_name, username, chat_id):
+    user_info = {
+        "rule": "User",
+        "full_name": full_name,
+        "username": username,
+        "chat_id": chat_id,
+        "wallet": 0
+    }
+    user_existed(user_info)
+    
+    # user_existed = collection.find_one({"chat_id": chat_id}) is not None
+
+    # if user_existed:
+    #     collection.update_one({"chat_id": chat_id}, {"$set": {"full_name": full_name, "username": username}})
+
+    # else:
+    #     if (collection.find_one({"chat_id": chat_id}) is None):
+    #         collection.insert_one(user_info)
+    #         # Send message to owner when a new member joined
+
+    #         user = get_user(chat_id)
+
+    #         # Counting the number of the users
+    #         total_users = collection.count_documents({})
+    #         # Get chat ID from owner document
+    #         owner_chat_id = collection.find_one()['chat_id']
+    #         if owner_chat_id != user['chat_id']:
+    #             bot.send_message(owner_chat_id, f"🔥 New member:\n\n👤 <b>{full_name}</b>\n\nTotal users: {total_users}", parse_mode='HTML' )
+
+def user_existed(info):
+    existed = collection.find_one({"chat_id": info.get("chat_id")}) is not None
+
+    if existed:
+        if info.get("rule") == "Owner":
+            collection.update_one({"chat_id": info.get("chat_id")}, {"$set": info})
+
+        elif info.get("rule") == "User":
+            collection.update_one({"chat_id": info.get("chat_id")}, {"$set": {"full_name": info.get("full_name"), "username": info.get("username")}})
 
     else:
-        if (owner_collection.find_one({"chat_id": chat_id}) is None):
-            user_collection.insert_one(user_info)
-            # Send message to owner when a new member joined
+        if info.get("rule") == "Owner":
+            collection.insert_one(info)
 
-            user = get_user(chat_id)
+        elif info.get("rule") == "User":
+            if (collection.find_one({"chat_id": info.get("chat_id")}) is None):
+                collection.insert_one(info)
+                # Send message to owner when a new member joined
 
-            # Counting the number of the users
-            total_users = user_collection.count_documents({})
-            # Get chat ID from owner document
-            owner_chat_id = owner_collection.find_one()['chat_id']
-            if owner_chat_id != user['chat_id']:
-                bot.send_message(owner_chat_id, f"🔥 New member:\n\n👤 <b>{full_name}</b>\n\nTotal users: {total_users}", parse_mode='HTML' )
+                user = get_user(info.get("chat_id"))
 
-
-
+                # Counting the number of the users
+                total_users = collection.count_documents({})
+                # Get chat ID from owner document
+                owner_chat_id = collection.find_one()['chat_id']
+                if owner_chat_id != user['chat_id']:
+                    bot.send_message(owner_chat_id, f"🔥 New member:\n\n👤 <b>{info.get("full_name")}</b>\n\nTotal users: {total_users}", parse_mode='HTML')
