@@ -1,1 +1,4 @@
 .env
+src/Commands/__pycache__/startCommand.cpython-312.pyc
+src/Database/__pycache__/MongoDB.cpython-312.pyc
+.gitignore
