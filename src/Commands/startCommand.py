@@ -1,5 +1,5 @@
 from Database.MongoDB import users, save_owner, save_user, get_owner, get_user
-
+from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 def send_welcome(message, bot):
     if message.chat.type == "private":
@@ -15,12 +15,23 @@ def send_welcome(message, bot):
         username = message.from_user.username
         chat_id = message.chat.id
 
+        # Make inline keyboard
+        start_keyboard = InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton("💳 My Wallet", callback_data="wallet"),
+                InlineKeyboardButton("🛒 Shop", callback_data="shop")
+            ],
+            [
+                InlineKeyboardButton("💰 Add Balance", callback_data="add_balance"),
+                InlineKeyboardButton("ℹ️ Help", callback_data="help")
+            ]
+        ])
+
         # Set owner if it's the first user and there is one owner only
         if users.count_documents({}) == 0:
             save_owner(full_name, username, chat_id)
             bot.send_message(message.chat.id, f"Welcome <b>{full_name}</b>\nYou are my owner from now on",
-                             parse_mode='HTML')
-            # logging.info(message.text)
+                             parse_mode='HTML', reply_markup=start_keyboard)
 
         else:
             unsavedUser = get_user(chat_id)
@@ -45,12 +56,12 @@ def send_welcome(message, bot):
                 bot.send_message(message.chat.id,
                                  f"Hey owner, <b>{full_name}</b>!\n\nThank you for interacting with me. I'm excited "
                                  f"to have you on board. 🌹",
-                                 parse_mode='HTML')
+                                 parse_mode='HTML', reply_markup=start_keyboard)
             else:
                 bot.send_message(message.chat.id,
                                  f"Welcome, <b>{full_name}</b>!\n\nThank you for interacting with our Telegram bot. "
                                  f"We're excited to have you on board. 🌹",
-                                 parse_mode='HTML')
+                                 parse_mode='HTML', reply_markup=start_keyboard)
 
     else:
         bot_username = bot.get_me().username
