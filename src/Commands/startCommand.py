@@ -15,8 +15,9 @@ def send_welcome(message, bot):
         username = message.from_user.username
         chat_id = message.chat.id
 
+
         # Make inline keyboard
-        start_keyboard = InlineKeyboardMarkup([
+        start_keyboard =[
             [
                 InlineKeyboardButton("💳 My Wallet", callback_data="wallet"),
                 InlineKeyboardButton("🛒 Shop", callback_data="shop")
@@ -25,13 +26,24 @@ def send_welcome(message, bot):
                 InlineKeyboardButton("💰 Add Balance", callback_data="add_balance"),
                 InlineKeyboardButton("ℹ️ Help", callback_data="help")
             ]
-        ])
+            ]
+
+        user_start_keyboard = InlineKeyboardMarkup(start_keyboard)
+        
+        owner_start_keyboard = InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton("➕ Add Gift Card", callback_data="add_gift_card"),
+                InlineKeyboardButton("➖ Remove Gift Card", callback_data="remove_gift_card")
+            ],
+            *start_keyboard 
+            ])
+
 
         # Set owner if it's the first user and there is one owner only
         if users.count_documents({}) == 0:
             save_owner(full_name, username, chat_id)
             bot.send_message(message.chat.id, f"Welcome <b>{full_name}</b>\nYou are my owner from now on",
-                             parse_mode='HTML', reply_markup=start_keyboard)
+                             parse_mode='HTML', reply_markup=owner_start_keyboard)
 
         else:
             unsavedUser = get_user(chat_id)
@@ -47,21 +59,20 @@ def send_welcome(message, bot):
             owner_chat_id = get_owner()['chat_id']
 
             if owner_chat_id != user['chat_id'] and unsavedUser is None:
-                # TODO make new member as telegram member not like this shit
                 bot.send_message(owner_chat_id,
-                                 f"🔥 New member:\n\n👤 <b>{user.get("full_name")}</b>\n\nTotal users: {total_users}",
+                                 f"🔥 New member:\n\n👤 <a href=\"tg://user?id={user.get('chat_id')}\">{user.get('full_name')}</a>\n\nTotal users: {total_users}",
                                  parse_mode='HTML')
 
             if message.chat.id == get_owner()['chat_id']:
                 bot.send_message(message.chat.id,
                                  f"Hey owner, <b>{full_name}</b>!\n\nThank you for interacting with me. I'm excited "
                                  f"to have you on board. 🌹",
-                                 parse_mode='HTML', reply_markup=start_keyboard)
+                                 parse_mode='HTML', reply_markup=owner_start_keyboard)
             else:
                 bot.send_message(message.chat.id,
                                  f"Welcome, <b>{full_name}</b>!\n\nThank you for interacting with our Telegram bot. "
                                  f"We're excited to have you on board. 🌹",
-                                 parse_mode='HTML', reply_markup=start_keyboard)
+                                 parse_mode='HTML', reply_markup=user_start_keyboard)
 
     else:
         bot_username = bot.get_me().username

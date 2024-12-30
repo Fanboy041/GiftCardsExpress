@@ -23,6 +23,17 @@ try:
             command = importlib.import_module(f'Commands.{command_name}')
             commands[command_name] = command
 
+
+    callbacks_dir = os.path.join(os.path.dirname(__file__), 'Callbacks')
+    callbacks = {}
+
+    for folderName in os.listdir(callbacks_dir):
+        if folderName.endswith('.py') and folderName != '__init__.py':
+            callback_name = os.path.splitext(folderName)[0]
+            callback = importlib.import_module(f'Callbacks.{callback_name}')
+            callbacks[callback_name] = callback
+
+
     logging.info("Main script runs successfully, Bot is working")
 
     # Start command
@@ -31,6 +42,11 @@ try:
         if 'startCommand' in commands:
             commands['startCommand'].send_welcome(message, bot)
 
+    # Wallet Callback
+    @bot.callback_query_handler(func=lambda call: call.data == 'wallet')
+    def handle_wallet_callback(call):
+        if 'walletCallback' in callbacks:
+            callbacks['walletCallback'].handle_wallet_callback(call)
 
     bot.infinity_polling()
 except KeyboardInterrupt:
