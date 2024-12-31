@@ -46,12 +46,7 @@ def save_owner(full_name, username, chat_id):
         "chat_id": chat_id,
         "wallet": 0
     }
-    if __user_existed(owner_info) is True:
-        # TODO: check username and fullname before updating
-        users.update_one({"chat_id": owner_info.get("chat_id")},
-                         {"$set": {"full_name": owner_info.get("full_name"), "username": owner_info.get("username")}})
-    else:
-        users.insert_one(owner_info)
+    users.insert_one(owner_info)
 
 
 # Create a function to save the user information to the database
@@ -64,9 +59,13 @@ def save_user(full_name, username, chat_id):
         "wallet": 0
     }
     if __user_existed(user_info) is True:
-        # TODO: check username and fullname before updating
-        users.update_one({"chat_id": user_info.get("chat_id")},
-                         {"$set": {"full_name": user_info.get("full_name"), "username": user_info.get("username")}})
+        if get_user(user_info.get("chat_id"))['username'] != username:
+            users.update_one({"chat_id": user_info.get("chat_id")},
+                            {"$set": {"username": user_info.get("username")}})
+
+        if get_user(user_info.get("chat_id"))['full_name'] != full_name:
+            users.update_one({"chat_id": user_info.get("chat_id")},
+                            {"$set": {"full_name": user_info.get("full_name")}})
     else:
         users.insert_one(user_info)
 
