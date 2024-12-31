@@ -1,5 +1,7 @@
-from Database.MongoDB import users, save_owner, save_user, get_owner, get_user
+from Database.Users import users, save_owner, save_user, get_owner, get_user
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
+from Callbacks import wallet, shop, addGiftCard
+
 
 def send_welcome(message, bot):
     if message.chat.type == "private":
@@ -15,9 +17,8 @@ def send_welcome(message, bot):
         username = message.from_user.username
         chat_id = message.chat.id
 
-
         # Make inline keyboard
-        start_keyboard =[
+        start_keyboard = [
             [
                 InlineKeyboardButton("💳 My Wallet", callback_data="wallet"),
                 InlineKeyboardButton("🛒 Shop", callback_data="shop")
@@ -26,18 +27,18 @@ def send_welcome(message, bot):
                 InlineKeyboardButton("💰 Add Balance", callback_data="add_balance"),
                 InlineKeyboardButton("ℹ️ Help", callback_data="help")
             ]
-            ]
+        ]
 
         user_start_keyboard = InlineKeyboardMarkup(start_keyboard)
-        
+
         owner_start_keyboard = InlineKeyboardMarkup([
             [
                 InlineKeyboardButton("➕ Add Gift Card", callback_data="add_gift_card"),
-                InlineKeyboardButton("➖ Remove Gift Card", callback_data="remove_gift_card")
+                InlineKeyboardButton("🔎 Show Gift Card", callback_data="show_gift_card")
+                # InlineKeyboardButton("➖ Remove Gift Card", callback_data="remove_gift_card")
             ],
-            *start_keyboard 
-            ])
-
+            *start_keyboard
+        ])
 
         # Set owner if it's the first user and there is one owner only
         if users.count_documents({}) == 0:
@@ -78,3 +79,24 @@ def send_welcome(message, bot):
         bot_username = bot.get_me().username
         if f"@{bot_username}" in message.text:
             bot.reply_to(message, "Please run the command in private")
+
+    # Wallet Callback
+    @bot.callback_query_handler(func=lambda call: call.data == 'wallet')
+    def handle_wallet_callback(call):
+        wallet.handle_wallet_callback(call, bot)
+
+    # Shop Callback
+    @bot.callback_query_handler(func=lambda call: call.data == 'shop')
+    def handle_shop_callback(call):
+        shop.handle_shop_callback(call, bot)
+
+    # AddGiftCard Callback
+    @bot.callback_query_handler(func=lambda call: call.data == 'add_gift_card')
+    def handle_add_gift_card_callback(call):
+        addGiftCard.handle_add_gift_card_callback(call, bot)
+
+    # Back Callback
+    @bot.callback_query_handler(func=lambda call: call.data == 'back_to_main_menu')
+    def back_to_main_menu_callback(call):
+        bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.message_id)
+        send_welcome(call.message, bot)

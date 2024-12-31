@@ -23,7 +23,6 @@ try:
             command = importlib.import_module(f'Commands.{command_name}')
             commands[command_name] = command
 
-
     callbacks_dir = os.path.join(os.path.dirname(__file__), 'Callbacks')
     callbacks = {}
 
@@ -33,20 +32,26 @@ try:
             callback = importlib.import_module(f'Callbacks.{callback_name}')
             callbacks[callback_name] = callback
 
-
     logging.info("Main script runs successfully, Bot is working")
 
     # Start command
     @bot.message_handler(commands=['start'])
     def handle_start_command(message):
-        if 'startCommand' in commands:
-            commands['startCommand'].send_welcome(message, bot)
+        if 'start' in commands:
+            commands['start'].send_welcome(message, bot)
 
-    # Wallet Callback
-    @bot.callback_query_handler(func=lambda call: call.data == 'wallet')
-    def handle_wallet_callback(call):
-        if 'walletCallback' in callbacks:
-            callbacks['walletCallback'].handle_wallet_callback(call)
+    # # Wallet Callback
+    # @bot.callback_query_handler(func=lambda call: call.data == 'wallet')
+    # def handle_wallet_callback(call):
+    #     if 'wallet' in callbacks:
+    #         callbacks['wallet'].handle_wallet_callback(call, bot)
+    #
+    #
+    # @bot.callback_query_handler(func=lambda call: call.data == 'wallet')
+    # def handle_wallet_callback(call):
+    #     if 'wallet' in callbacks:
+    #         callbacks['wallet'].handle_wallet_callback(call, bot)
+
 
     bot.infinity_polling()
 except KeyboardInterrupt:
