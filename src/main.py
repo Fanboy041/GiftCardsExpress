@@ -1,3 +1,9 @@
+# This import to make mongodb run in Termux
+import dns.resolver
+
+dns.resolver.default_resolver = dns.resolver.Resolver(configure=False)
+dns.resolver.default_resolver.nameservers = ['8.8.8.8']
+
 import telebot
 import logging
 import os
@@ -34,11 +40,13 @@ try:
 
     logging.info("Main script runs successfully, Bot is working")
 
+
     # Start command
     @bot.message_handler(commands=['start'])
     def handle_start_command(message):
         if 'start' in commands:
             commands['start'].send_welcome(message, bot)
+
 
     # # Wallet Callback
     # @bot.callback_query_handler(func=lambda call: call.data == 'wallet')
@@ -51,7 +59,6 @@ try:
     # def handle_wallet_callback(call):
     #     if 'wallet' in callbacks:
     #         callbacks['wallet'].handle_wallet_callback(call, bot)
-
 
     bot.infinity_polling()
 except KeyboardInterrupt:
