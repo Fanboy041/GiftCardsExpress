@@ -96,6 +96,7 @@ def send_welcome(message, bot):
         addGiftCard.handle_add_gift_card_callback(call, bot)
 
     # Back Callback
+    @bot.callback_query_handler(func=lambda call: call.data == 'clear')
     @bot.callback_query_handler(func=lambda call: call.data == 'back_to_main_menu')
     def back_to_main_menu_callback(call):
         bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.message_id)

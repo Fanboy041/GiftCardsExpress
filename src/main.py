@@ -48,18 +48,6 @@ try:
             commands['start'].send_welcome(message, bot)
 
 
-    # # Wallet Callback
-    # @bot.callback_query_handler(func=lambda call: call.data == 'wallet')
-    # def handle_wallet_callback(call):
-    #     if 'wallet' in callbacks:
-    #         callbacks['wallet'].handle_wallet_callback(call, bot)
-    #
-    #
-    # @bot.callback_query_handler(func=lambda call: call.data == 'wallet')
-    # def handle_wallet_callback(call):
-    #     if 'wallet' in callbacks:
-    #         callbacks['wallet'].handle_wallet_callback(call, bot)
-
     bot.infinity_polling()
 except KeyboardInterrupt:
     logging.info("Polling manually interrupted.")
