@@ -5,7 +5,7 @@ giftCard_schema = {
     str: [
         {
             "gift_card_code": str,
-            "price": str
+            "price": int
         }
     ]
 }
@@ -23,8 +23,23 @@ def get_services_name():
     return services_name_list
 
 
+def save_service_name(service_name):
+    giftCard_info_set = {
+        service_name: [
+            {
+            }
+        ]
+    }
+
+    if service_name not in get_services_name():
+        giftCards.insert_one(giftCard_info_set)
+        return "The service name has been saved"
+    else:
+        return "The Service name is already taken"
+
+
 # Create a function to save the giftCard information to the database
-def save_service_name(service_name, gift_card_code, price):
+def save_gift_card_name(service_name, gift_card_code, price):
     giftCard_info_set = {
         service_name: [
             {
@@ -44,7 +59,7 @@ def save_service_name(service_name, gift_card_code, price):
                     "gift_card_code": gift_card_code,
                     "price": price
                 }
-            }
+        }
         }
 
         query_filter = str
