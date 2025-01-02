@@ -51,11 +51,9 @@ def save_service_name(service_name):
 
     if service_name not in get_services_name():
         giftCards.insert_one(giftCard_info_set)
-        # TODO: Edit text
-        return "The service name has been saved"
+        return f"{service_name} service has been saved"
     else:
-        # TODO: Edit text
-        return "The Service name is already taken"
+        return f"{service_name} service is already exist"
 
 
 # Create a function to save the giftCard information to the database
@@ -70,8 +68,7 @@ def save_gift_card_name(service_name, gift_card_code, price):
     # }
 
     if service_name not in get_services_name():
-        # TODO: Edit text
-        return "Service name was not found, please create a service name"
+        return f"{service_name} was not found, please create a service name"
         # giftCards.insert_one(giftCard_info_set)
 
     else:
@@ -100,10 +97,7 @@ def save_gift_card_name(service_name, gift_card_code, price):
             #     gift_card_list.append(x.get("gift_card_code"))
             #
             giftCards.update_one({service_name: get_service_info(service_name)}, giftCard_info_update)
-            # TODO: Edit text
-            return "This gift Card has been added"
+            return f"{service_name} gift card has been added"
 
         else:
-
-            # TODO: Edit text
-            return "This gift Card is already exist"
+            return f"{service_name}  gift card is already exist"
