@@ -49,8 +49,6 @@ def save_service_name(service_name):
         service_name: []
     }
 
-    print(service_name)
-    print(get_services_name())
     if service_name not in get_services_name():
         giftCards.insert_one(giftCard_info_set)
         # TODO: Edit text
