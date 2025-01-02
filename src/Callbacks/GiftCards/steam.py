@@ -1,10 +1,11 @@
 from telebot import types
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
-from Database.GiftCards import save_service_name
+from Database.GiftCards import save_gift_card_name
 from Callbacks import confirm
 
 def handle_steam_callback(call, bot):
     chat_id = call.message.chat.id
+    print(call.data)
     
     try:
         # Clear any existing handlers and acknowledge the request
@@ -99,5 +100,5 @@ def process_price(message, bot, code, message1):
     
     @bot.callback_query_handler(func=lambda call: call.data == 'confirm')
     def handle_confirm_callback(call):
-        save_service_name("Steam", code, price_float)
+        save_gift_card_name("Steam", code, price_float)
         confirm.handle_confirm_callback(call, bot)

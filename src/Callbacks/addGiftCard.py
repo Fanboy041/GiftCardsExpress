@@ -24,6 +24,6 @@ def handle_add_gift_card_callback(call, bot):
                           call.message.message_id, reply_markup=keyboard, parse_mode='HTML')
 
     # Steam Callback
-    @bot.callback_query_handler(func=lambda call: call.data == 'steam')
+    @bot.callback_query_handler(func=lambda call: call.data == 'Steam')
     def handle_steam_callback(call):
         steam.handle_steam_callback(call, bot)
