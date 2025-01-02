@@ -5,23 +5,23 @@ from telebot.types import InlineKeyboardMarkup
 
 def handle_add_service_callback(call, bot):
     chat_id = call.message.chat.id
-
+    message_id = call.message.message_id
     try:
         # Ask user for the gift card code
         bot.edit_message_text(
             "please send me the correct service name you want to add:\n\n"
             "Note: Make sure to enter the code carefully",
             chat_id,
-            call.message.message_id
+            message_id
         )
-        bot.register_next_step_handler(call.message, process_Service, bot)
+        bot.register_next_step_handler(call.message, process_Service, bot, message_id)
 
     except Exception as e:
         bot.send_message(chat_id, "An error occurred. Please try again.")
         print(f"Error in handle_add_service_callback: {str(e)}")
 
 
-def process_Service(message, bot):
+def process_Service(message, bot, message_id):
     chat_id = message.chat.id
     # service_name = message.text
 
@@ -42,14 +42,11 @@ def process_Service(message, bot):
         )
 
         # Save to database if confirmed
-        # Todo: فارط نعس مالي حيل اكتب انكليزي
-        # TODO: المهم هون عم يحفظ المسج القديمة لاخر يوم بعمرو يعني بضل حافطها وعم يكررها وما بيهتم شو اليوزر بيعطيه
-        oldMessage = int(message.message_id) - 1
         bot.delete_message(message.chat.id, message.message_id)
         bot.edit_message_text(
             confirmation_text,
             chat_id,
-            oldMessage,
+            message_id,
             reply_markup=confirm_keyboard
         )
 

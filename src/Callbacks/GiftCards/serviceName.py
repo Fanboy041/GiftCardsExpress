@@ -6,6 +6,7 @@ from telebot.types import InlineKeyboardMarkup
 def handle_service_callback(call, bot):
     chat_id = call.message.chat.id
     service_name = call.data
+    message_id = call.message.message_id
 
     try:
         # Clear any existing handlers and acknowledge the request
@@ -16,16 +17,16 @@ def handle_service_callback(call, bot):
             f"Please send me the {service_name} gift card code:\n\n"
             "Note: Make sure to enter the code carefully",
             chat_id,
-            call.message.message_id
+            message_id
         )
-        bot.register_next_step_handler(call.message, process_code, bot, service_name)
+        bot.register_next_step_handler(call.message, process_code, bot, service_name, message_id)
 
     except Exception as e:
         bot.send_message(chat_id, "An error occurred. Please try again.")
         print(f"Error in handle_steam_callback: {str(e)}")
 
 
-def process_code(message, bot, service_name):
+def process_code(message, bot, service_name, message_id):
     chat_id = message.chat.id
     code = message.text.strip()
 
@@ -35,24 +36,21 @@ def process_code(message, bot, service_name):
         return
 
     try:
-        # Todo: فارط نعس مالي حيل اكتب انكليزي
-        # TODO: المهم هون عم يحفظ المسج القديمة لاخر يوم بعمرو يعني بضل حافطها وعم يكررها وما بيهتم شو اليوزر بيعطيه
-        message1 = int(message.message_id) - 1
         bot.delete_message(message.chat.id, message.message_id)
         bot.edit_message_text(
             "Please send me the price of the gift card:\n\n"
             "Format: Enter number only (e.g., 50)",
             chat_id,
-            message1
+            message_id
         )
-        bot.register_next_step_handler(message, process_price, bot, code, message1, service_name)
+        bot.register_next_step_handler(message, process_price, bot, code, service_name, message_id)
 
     except Exception as e:
         bot.send_message(chat_id, "An error occurred. Please try again.")
         print(f"Error in process_code: {str(e)}")
 
 
-def process_price(message, bot, code, message1, service_name):
+def process_price(message, bot, code, service_name, message_id):
     chat_id = message.chat.id
     price = message.text.strip()
 
@@ -92,7 +90,7 @@ def process_price(message, bot, code, message1, service_name):
         bot.edit_message_text(
             confirmation_text,
             chat_id,
-            message1,
+            message_id,
             reply_markup=confirm_keyboard
         )
 
