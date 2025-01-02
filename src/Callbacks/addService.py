@@ -23,13 +23,13 @@ def handle_add_service_callback(call, bot):
 
 def process_Service(message, bot, message_id):
     chat_id = message.chat.id
-    # service_name = message.text
+    service = message.text
 
     try:
         # Create confirmation keyboard
         start_keyboard = [
             [
-                types.InlineKeyboardButton("✅ Yes", callback_data='yes_add_service'),
+                types.InlineKeyboardButton("✅ Yes", callback_data=f'yes_add_service_{service}'),
                 types.InlineKeyboardButton("❌ Clear", callback_data='back_to_main_menu')
             ]
         ]
@@ -38,7 +38,7 @@ def process_Service(message, bot, message_id):
 
         # Show confirmation message with details
         confirmation_text = (
-            f"do you want to save the service name '{message.text}'?"
+            f"do you want to save the service name '{service}'?"
         )
 
         # Save to database if confirmed
@@ -54,9 +54,9 @@ def process_Service(message, bot, message_id):
         bot.send_message(chat_id, "An error occurred while saving. Please try again.")
         print(f"Error in process_service: {str(e)}")
 
-    @bot.callback_query_handler(func=lambda call: call.data.startswith("yes_add_service"))
+    @bot.callback_query_handler(func=lambda call: call.data.startswith(f"yes_add_service_{service}"))
     def handle_yes_callback(call):
-        text = save_service_name(message.text)
+        text = save_service_name(service)
         try:
             # Delete the previous message
             bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.message_id)
