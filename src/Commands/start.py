@@ -1,6 +1,6 @@
 from Database.Users import users, save_owner, save_user, get_owner, get_user
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
-from Callbacks import wallet, shop, servicesNameAsButtons
+from Callbacks import wallet, shop, servicesNameAsButtons, help
 from Database.GiftCards import get_gift_cards, get_service_info
 
 
@@ -95,6 +95,11 @@ def send_welcome(message, bot):
     @bot.callback_query_handler(func=lambda call: call.data == 'add_gift_card')
     def handle_services_name_as_buttons_callback(call):
         servicesNameAsButtons.handle_services_name_as_buttons_callback(call, bot)
+
+    # Help Callback
+    @bot.callback_query_handler(func=lambda call: call.data == 'help')
+    def handle_help_callback(call):
+        help.handle_help_callback(call, bot)
 
     # Back Callback
     @bot.callback_query_handler(func=lambda call: call.data == 'back_to_main_menu')
