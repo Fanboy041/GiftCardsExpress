@@ -89,6 +89,8 @@ def send_welcome(message, bot):
     # Shop Callback
     # AddGiftCard Callback
     # ShowGiftCard Callback
+    # Back to shop menu
+    @bot.callback_query_handler(func=lambda call: call.data == 'back_to_shop_menu')
     @bot.callback_query_handler(func=lambda call: call.data == 'shop')
     @bot.callback_query_handler(func=lambda call: call.data == 'show_gift_card')
     @bot.callback_query_handler(func=lambda call: call.data == 'add_gift_card')

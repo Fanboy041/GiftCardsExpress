@@ -43,6 +43,8 @@ def handle_services_name_as_buttons_callback(call, bot):
                 addGiftCardCode.handle_add_gift_card_code_callback(call, bot)
             case 'shop':
                 shop.handle_shop_callback(call, bot)
+            case 'back_to_shop_menu':
+                shop.handle_shop_callback(call, bot)
             case 'show_gift_card':
                 print(get_services_name())
             case _:
