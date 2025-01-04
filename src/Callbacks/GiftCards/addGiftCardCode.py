@@ -3,9 +3,9 @@ from telebot import types
 from telebot.types import InlineKeyboardMarkup
 
 
-def handle_service_callback(call, bot):
+def handle_add_gift_card_code_callback(call, bot):
     chat_id = call.message.chat.id
-    service_name = call.data
+    service_name = call.data.split('_', 1)[0]
     message_id = call.message.message_id
 
     try:
@@ -97,6 +97,7 @@ def process_price(message, bot, code, service_name, message_id):
     except Exception as e:
         bot.send_message(chat_id, "An error occurred while saving. Please try again.")
         print(f"Error in process_price: {str(e)}")
+
 
     @bot.callback_query_handler(func=lambda call: call.data.startswith(f"yes_add_gift_card_{service_name}"))
     def handle_yes_callback(call):

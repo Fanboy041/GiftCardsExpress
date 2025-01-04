@@ -44,6 +44,17 @@ def get_gift_cards(service_name):
     return gift_cards_code_list
 
 
+def get_gift_cards_price(service_name):
+    gift_cards_price_list = []
+    gift_cards_list = get_service_info(service_name)
+    for giftCardsCode in gift_cards_list:
+        for key, value in giftCardsCode.items():
+            if key == "price":
+                gift_cards_price_list.append(value)
+
+    return gift_cards_price_list
+
+
 def save_service_name(service_name):
     giftCard_info_set = {
         service_name: []
@@ -79,7 +90,7 @@ def save_gift_card_name(service_name, gift_card_code, price):
                     "gift_card_code": gift_card_code,
                     "price": price
                 }
-            }
+        }
         }
         print(get_gift_cards(service_name))
         print(gift_card_code)
