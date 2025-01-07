@@ -5,7 +5,7 @@ giftCard_schema = {
     str: [
         {
             "gift_card_code": str,
-            "price": int
+            "price": float
         }
     ]
 }
@@ -33,7 +33,7 @@ def get_service_info(service_name):
     return service_info_list
 
 
-def get_gift_cards(service_name):
+def get_gift_cards_code(service_name):
     gift_cards_code_list = []
     gift_cards_list = get_service_info(service_name)
     for giftCardsCode in gift_cards_list:
@@ -42,6 +42,13 @@ def get_gift_cards(service_name):
                 gift_cards_code_list.append(value)
 
     return gift_cards_code_list
+
+
+def get_gift_card_code_by_price(service_name, price):
+    gift_cards_list = get_service_info(service_name)
+    for giftCardsCode in gift_cards_list:
+        if price == giftCardsCode["price"]:
+            return giftCardsCode["gift_card_code"]
 
 
 def get_gift_cards_price(service_name):
@@ -69,18 +76,9 @@ def save_service_name(service_name):
 
 # Create a function to save the giftCard information to the database
 def save_gift_card_name(service_name, gift_card_code, price):
-    # giftCard_info_set = {
-    #     service_name: [
-    #         {
-    #             "gift_card_code": gift_card_code,
-    #             "price": price
-    #         }
-    #     ]
-    # }
 
     if service_name not in get_services_name():
         return f"{service_name} was not found, please create a service name"
-        # giftCards.insert_one(giftCard_info_set)
 
     else:
 
@@ -90,23 +88,10 @@ def save_gift_card_name(service_name, gift_card_code, price):
                     "gift_card_code": gift_card_code,
                     "price": price
                 }
+            }
         }
-        }
-        print(get_gift_cards(service_name))
-        print(gift_card_code)
 
-        if gift_card_code not in get_gift_cards(service_name):
-            #
-            # query_filter = str
-            # for x in giftCards.find({}, {"_id": 0}):
-            #     for key, value in x.items():
-            #         if key == service_name:
-            #             query_filter = value
-
-            # gift_card_list = []
-            # for x in query_filter:
-            #     gift_card_list.append(x.get("gift_card_code"))
-            #
+        if gift_card_code not in get_gift_cards_code(service_name):
             giftCards.update_one({service_name: get_service_info(service_name)}, giftCard_info_update)
             return f"{service_name} gift card has been added"
 
