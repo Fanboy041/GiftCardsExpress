@@ -98,7 +98,6 @@ def process_price(message, bot, code, service_name, message_id):
         bot.send_message(chat_id, "An error occurred while saving. Please try again.")
         print(f"Error in process_price: {str(e)}")
 
-
     @bot.callback_query_handler(func=lambda call: call.data.startswith(f"yes_add_gift_card_{service_name}"))
     def handle_yes_callback(call):
         text = save_gift_card_name(service_name, code, price_float)

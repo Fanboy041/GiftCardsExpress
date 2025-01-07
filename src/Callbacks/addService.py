@@ -38,7 +38,7 @@ def process_Service(message, bot, message_id):
 
         # Show confirmation message with details
         confirmation_text = (
-            f"do you want to save the service name '{service}'?"
+            f"do you want to save the service name '{service.title()}'?"
         )
 
         # Save to database if confirmed
@@ -56,7 +56,7 @@ def process_Service(message, bot, message_id):
 
     @bot.callback_query_handler(func=lambda call: call.data.startswith(f"yes_add_service_{service}"))
     def handle_yes_callback(call):
-        text = save_service_name(service)
+        text = save_service_name(service.title())
         try:
             # Delete the previous message
             bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.message_id)
