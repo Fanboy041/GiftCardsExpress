@@ -6,7 +6,7 @@ user_schema = {
     "full_name": str,
     "username": str,
     "chat_id": int,
-    "wallet": int
+    "wallet": float
 }
 
 
@@ -31,6 +31,14 @@ def get_users():
 
 def get_wallet(chat_id):
     return get_user(chat_id)["wallet"]
+
+
+def update_wallet(chat_id, price):
+    existed_user = get_user(chat_id)
+    new_wallet = get_wallet(chat_id) - price
+    users.update_one({"chat_id": existed_user["chat_id"]},
+                     {"$set": {"wallet": new_wallet}})
+    return f"your wallet has been updated\n\n your current wallet is: {get_wallet(chat_id)}"
 
 
 def delete_user(chat_id):
@@ -61,11 +69,11 @@ def save_user(full_name, username, chat_id):
     if __user_existed(user_info) is True:
         if get_user(user_info.get("chat_id"))['username'] != username:
             users.update_one({"chat_id": user_info.get("chat_id")},
-                            {"$set": {"username": user_info.get("username")}})
+                             {"$set": {"username": user_info.get("username")}})
 
         if get_user(user_info.get("chat_id"))['full_name'] != full_name:
             users.update_one({"chat_id": user_info.get("chat_id")},
-                            {"$set": {"full_name": user_info.get("full_name")}})
+                             {"$set": {"full_name": user_info.get("full_name")}})
     else:
         users.insert_one(user_info)
 
